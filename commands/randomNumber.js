@@ -4,7 +4,7 @@ const ethers = require('ethers');
 const RandomBeaconImpl = require('@keep-network/keep-core/artifacts/KeepRandomBeaconServiceImplV1.json');
 const RandomBeaconService = require('@keep-network/keep-core/artifacts/KeepRandomBeaconService.json');
 
-async function random() {
+module.exports = async function random() {
   let wallet;
   try {
     const j = fs.readFileSync('wallet.json', 'utf8');
@@ -54,6 +54,6 @@ async function random() {
   }
 }
 
-random().catch((err) => {
-  console.error(err);
-});
+// module.exports = random().catch((err) => {
+//   console.error(err);
+// });
