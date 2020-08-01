@@ -4,21 +4,28 @@ const random = require('./randomNumber');
 
 const fs = require('fs');
 
-// Could throw and should probably be handled.
-const j = fs.readFileSync('wallet.json', 'utf8');
-const w  = await new ethers.Wallet.fromEncryptedJson(j, process.env.PASS);
-const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
-const wallet = w.connect(ip);
-
-const requestRandom = require('../utils/requestRandom.js')(wallet);
-const waitRandom = require('../utils/waitRandom.js')(wallet);
+let requestRandom, waitRandom;
 
 module.exports = {
-  name: 'bet',
-  description: 'place a bet',
-  async execute(message, args) {
+	name: 'bet',
+	description: 'place a bet',
+	async setupWallet() {
+		if(this._wallet)  { return this._wallet; }
+
+		const j = fs.readFileSync('wallet.json', 'utf8');
+		const w  = await new ethers.Wallet.fromEncryptedJson(j, process.env.PASS);
+		const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
+		this._wallet = w.connect(ip);
+
+		requestRandom = require('../utils/requestRandom.js')(wallet);
+		waitRandom = require('../utils/waitRandom.js')(wallet);
+
+		return this._wallet;
+	},
+	async execute(message, args) {
+		await this.setupWallet();
 		const coin = args[0];
-    console.log(coin);
+		console.log(coin);
 		if (coin === 'heads' || coin === 'tails') {
 			message.channel.send(`You have placed a bet on ${coin}!`);
 		} else {
