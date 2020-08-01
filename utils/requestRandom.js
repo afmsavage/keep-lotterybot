@@ -4,6 +4,7 @@ const RandomBeaconImpl = require("@keep-network/keep-core/artifacts/KeepRandomBe
 const RandomBeaconService = require("@keep-network/keep-core/artifacts/KeepRandomBeaconService.json")
 
 module.exports = (wallet) => {
+	console.log(wallet);
 	return async () => {
 		const serviceContract = new ethers.Contract(RandomBeaconService.networks["3"].address, RandomBeaconImpl.abi, wallet);
 

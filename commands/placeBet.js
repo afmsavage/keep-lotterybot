@@ -4,8 +4,6 @@ const provider = new ethers.getDefaultProvider();
 
 const fs = require('fs');
 
-let requestRandom, waitRandom;
-
 module.exports = {
 	name: 'bet',
 	description: 'place a bet',
@@ -17,8 +15,8 @@ module.exports = {
 		const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
 		this._wallet = w.connect(ip);
 
-		requestRandom = require('../utils/requestRandom.js')(this._wallet);
-		waitRandom = require('../utils/waitRandom.js')(this._wallet);
+		this.requestRandom = require('../utils/requestRandom.js')(this._wallet);
+		this.waitRandom = require('../utils/waitRandom.js')(this._wallet);
 
 		return this._wallet;
 	},
@@ -36,7 +34,7 @@ module.exports = {
 		}
 
 		try {
-			const {txHash} = await requestRandom();
+			const {txHash} = await this.requestRandom();
 			message.channel.send(`requested randomness: https://ropsten.etherscan.io/tx/${txHash} - this might take a while`);
 		} catch (err) {
 			console.log(err.err);
@@ -44,7 +42,7 @@ module.exports = {
 			return
 		}
 
-		waitRandom().then(({txHash, num}) => {
+		this.waitRandom().then(({txHash, num}) => {
 			message.channel.send(`Got randomness: https://ropsten.etherscan.io/tx/${txHash} - ${num.toString()}`);
 
 			const isOdd = num.mod(2).eq(1);
