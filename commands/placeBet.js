@@ -4,20 +4,36 @@ const random = require('./randomNumber');
 
 const fs = require('fs');
 
-// Could throw and should probably be handled.
-const j = fs.readFileSync('wallet.json', 'utf8');
-const w  = await new ethers.Wallet.fromEncryptedJson(j, process.env.PASS);
-const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
-const wallet = w.connect(ip);
-
-const requestRandom = require('../utils/requestRandom.js')(wallet);
-const waitRandom = require('../utils/waitRandom.js')(wallet);
+let requestRandom, waitRandom;
 
 module.exports = {
-  name: 'bet',
-  description: 'place a bet',
-  async execute(message, args) {
-    console.log(args[0]);
+	name: 'bet',
+	description: 'place a bet',
+	async setupWallet() {
+		if(this._wallet)  { return this._wallet; }
+
+		const j = fs.readFileSync('wallet.json', 'utf8');
+		const w  = await new ethers.Wallet.fromEncryptedJson(j, process.env.PASS);
+		const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
+		this._wallet = w.connect(ip);
+
+		requestRandom = require('../utils/requestRandom.js')(wallet);
+		waitRandom = require('../utils/waitRandom.js')(wallet);
+
+		return this._wallet;
+	},
+	async execute(message, args) {
+		await this.setupWallet();
+		const coin = args[0];
+		console.log(coin);
+		if (coin === 'heads' || coin === 'tails') {
+			message.channel.send(`You have placed a bet on ${coin}!`);
+		} else {
+			message.channel.send(
+				'your bet choice was not valid. Chose heads or tails'
+			);
+			return;
+		}
 
 		try {
 			const {txHash} = await requestRandom();
@@ -32,22 +48,15 @@ module.exports = {
 			message.channel.send(`Got randomness: https://ropsten.etherscan.io/tx/${txHash} - ${num.toString()}`);
 
 			const isOdd = num.mod(2).eq(1);
-			if (args[0] === 'heads' || args[0] === 'tails') {
-				message.channel.send(`You have placed a bet on ${args[0]}!`);
 
-				if (args[0] === 'heads' && !isOdd) {
-					message.channel.send('The coin lands on heads, you win !');
-				} else if (args[0] === 'heads' && isOdd) {
-					message.channel.send('The coin lands on tails... you lose !');
-				} else if (args[0] === 'tails' && !isOdd) {
-					message.channel.send('The coin lands on heads... you lose !');
-				} else if (args[0] === 'tails' && isOdd) {
-					message.channel.send('The coin lands on heads... you win !');
-				}
-			} else {
-				message.channel.send(
-					'your bet choice was not valid. Chose heads or tails'
-				);
+			if (coin === 'heads' && !isOdd) {
+				message.channel.send('The coin lands on heads, you win !');
+			} else if (coin === 'heads' && isOdd) {
+				message.channel.send('The coin lands on tails... you lose !');
+			} else if (coin === 'tails' && !isOdd) {
+				message.channel.send('The coin lands on heads... you lose !');
+			} else if (coin === 'tails' && isOdd) {
+				message.channel.send('The coin lands on heads... you win !');
 			}
 		}).catch(err => {
 			message.channel.send(`could not get randomness :(`);
