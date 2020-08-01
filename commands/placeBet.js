@@ -17,8 +17,8 @@ module.exports = {
 		const ip = new ethers.providers.InfuraProvider('ropsten', process.env.INFURA_API);
 		this._wallet = w.connect(ip);
 
-		requestRandom = require('../utils/requestRandom.js')(wallet);
-		waitRandom = require('../utils/waitRandom.js')(wallet);
+		requestRandom = require('../utils/requestRandom.js')(this._wallet);
+		waitRandom = require('../utils/waitRandom.js')(this._wallet);
 
 		return this._wallet;
 	},
