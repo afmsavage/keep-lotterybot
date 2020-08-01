@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const provider = new ethers.getDefaultProvider();
-const random = require('./randomNumber');
+//const random = require('./randomNumber');
 
 const fs = require('fs');
 
