@@ -54,7 +54,7 @@ module.exports = {
 			} else if (coin === 'tails' && !isOdd) {
 				message.channel.send('The coin lands on heads... you lose !');
 			} else if (coin === 'tails' && isOdd) {
-				message.channel.send('The coin lands on heads... you win !');
+				message.channel.send('The coin lands on tails... you win !');
 			}
 		}).catch(err => {
 			message.channel.send(`could not get randomness :(`);

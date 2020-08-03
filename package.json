@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "docker build -t keeplotto .",
+    "run": "docker run -d --restart=always --name keeplotto"
   },
   "repository": {
     "type": "git",
