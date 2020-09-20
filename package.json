@@ -8,7 +8,7 @@
     "start": "node .",
     "lint": "eslint .",
     "build": "docker build -t keeplotto .",
-    "run": "docker run -d --restart=always --name keeplotto"
+    "run": "docker run -d --restart=always --name keeplotto keeplotto"
   },
   "repository": {
     "type": "git",
