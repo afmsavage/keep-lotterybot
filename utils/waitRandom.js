@@ -1,23 +1,29 @@
 const ethers = require('ethers');
 
-const RandomBeaconImpl = require("@keep-network/keep-core/artifacts/KeepRandomBeaconServiceImplV1.json")
-const RandomBeaconService = require("@keep-network/keep-core/artifacts/KeepRandomBeaconService.json")
+const RandomBeaconImpl = require('@keep-network/keep-core/artifacts/KeepRandomBeaconServiceImplV1.json');
+const RandomBeaconService = require('@keep-network/keep-core/artifacts/KeepRandomBeaconService.json');
 
-module.exports = (wallet) => { // returns object with transaction hash
-	return async () => {
-		const serviceContract = new ethers.Contract(RandomBeaconService.networks["3"].address, RandomBeaconImpl.abi, wallet);
+module.exports = (wallet) => {
+  // returns object with transaction hash
+  return async () => {
+    const serviceContract = new ethers.Contract(
+      '0x6c04499B595efdc28CdbEd3f9ed2E83d7dCCC717', // RandomBeaconService.networks['3'].address,
+      RandomBeaconImpl.abi,
+      wallet
+    );
 
-		const ret = new Promise((res, rej) => {
-			serviceContract.on("*", function (ev) {
-				if (ev.event === 'RelayEntryGenerated') {
-					console.log(`[https://ropsten.etherscan.io/tx/${ev.transactionHash}] generated ${ev.args[0]}`);
-					serviceContract.removeAllListeners();
-					res({txHash: ev.transactionHash, num: ev.args[1]});
-				}
-			});
-		});
+    const ret = new Promise((res, rej) => {
+      serviceContract.on('*', function (ev) {
+        if (ev.event === 'RelayEntryGenerated') {
+          console.log(
+            `[https://ropsten.etherscan.io/tx/${ev.transactionHash}] generated ${ev.args[0]}`
+          );
+          serviceContract.removeAllListeners();
+          res({ txHash: ev.transactionHash, num: ev.args[1] });
+        }
+      });
+    });
 
-		return ret;
-	}
-}
-
+    return ret;
+  };
+};
